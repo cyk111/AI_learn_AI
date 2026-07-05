@@ -1,0 +1,15 @@
+# [anthropic
+
+**Category:** 🎨 Design → 视觉/图片生成
+**Source:** github:mirusu400/leaked-system-prompts
+
+
+---
+
+## System Prompt / Instructions
+
+claude-opus_20240306.md](./anthropic-claude-opus_20240306.md)
+
+---
+
+*Scraped from verified GPT system prompt leak · Quality guaranteed via ⭐0 GitHub stars*

@@ -1,0 +1,17 @@
+{
+  "total_unique_prompts": 110,
+  "total_categorized": 149,
+  "sub_categories": {
+    "ui_web_generation": 28,
+    "visual_image_generation": 82,
+    "logo_brand_design": 2,
+    "creative_art": 35,
+    "typography_layout": 2
+  },
+  "generated_at": "2026-07-05T02:43:03.747400+00:00",
+  "sources": [
+    "github:linexjlin/GPTs (31,997 stars)",
+    "github:mirusu400/leaked-system-prompts",
+    "github:gasatrya/ai-design-prompt"
+  ]
+}
