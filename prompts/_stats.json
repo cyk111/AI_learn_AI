@@ -1,0 +1,25 @@
+{
+  "total_prompts": 4159,
+  "categories": {
+    "programming": 667,
+    "writing": 282,
+    "business": 122,
+    "education": 183,
+    "creative": 884,
+    "analysis": 434,
+    "productivity": 449,
+    "roleplay": 264,
+    "technical": 288,
+    "marketing": 191,
+    "health": 37,
+    "finance": 25,
+    "legal": 28,
+    "chinese": 200,
+    "system-prompt": 19,
+    "engineering": 10,
+    "general": 76
+  },
+  "generated_at": "2026-07-05T02:23:55.861369+00:00",
+  "sources_scraped": 12,
+  "quality_min_stars": "500+"
+}
