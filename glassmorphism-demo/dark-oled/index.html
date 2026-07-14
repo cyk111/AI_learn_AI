@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AUX — Bespoke Timepieces</title>
+
+<!-- Cormorant Garamond (elegant serif) + Inter (body) — wait, NEVER Inter. Let me use DM Sans -->
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500&family=DM+Sans:opsz,wght@9..40,100..1000&display=swap" rel="stylesheet">
+
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = {
+  theme: {
+    extend: {
+      fontFamily: {
+        display: ['Cormorant Garamond', 'serif'],
+        body: ['DM Sans', 'sans-serif'],
+      },
+      animation: {
+        'cinematic': 'cinematic 1.6s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+        'cinematic-delay': 'cinematic 1.6s cubic-bezier(0.16, 1, 0.3, 1) 0.2s forwards',
+        'reveal-up': 'revealUp 1s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+        'reveal-up-2': 'revealUp 1s cubic-bezier(0.16, 1, 0.3, 1) 0.3s forwards',
+        'reveal-up-3': 'revealUp 1s cubic-bezier(0.16, 1, 0.3, 1) 0.5s forwards',
+        'spotlight': 'spotlight 8s ease-in-out infinite',
+        'glow-breathe': 'glowBreathe 4s ease-in-out infinite',
+        'velvet': 'velvet 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+        'text-shimmer': 'textShimmer 6s ease-in-out infinite',
+        'drift': 'drift 20s ease-in-out infinite',
+        'drift-slow': 'drift 30s ease-in-out infinite 2s',
+      },
+      keyframes: {
+        cinematic: {
+          '0%': { opacity: '0', transform: 'scale(0.95)' },
+          '50%': { opacity: '0.5' },
+          '100%': { opacity: '1', transform: 'scale(1)' },
+        },
+        revealUp: {
+          '0%': { opacity: '0', transform: 'translateY(40px)' },
+          '100%': { opacity: '1', transform: 'translateY(0)' },
+        },
+        spotlight: {
+          '0%, 100%': { opacity: '0.15', transform: 'translate(0%, 0%)' },
+          '25%': { opacity: '0.25', transform: 'translate(2%, -2%)' },
+          '50%': { opacity: '0.1', transform: 'translate(-1%, 1%)' },
+          '75%': { opacity: '0.2', transform: 'translate(-2%, -1%)' },
+        },
+        glowBreathe: {
+          '0%, 100%': { opacity: '0.6' },
+          '50%': { opacity: '1' },
+        },
+        velvet: {
+          '0%': { opacity: '0', filter: 'blur(8px)' },
+          '100%': { opacity: '1', filter: 'blur(0)' },
+        },
+        textShimmer: {
+          '0%, 100%': { backgroundPosition: '0% 50%' },
+          '50%': { backgroundPosition: '100% 50%' },
+        },
+        drift: {
+          '0%, 100%': { transform: 'translate(0, 0) scale(1)' },
+          '33%': { transform: 'translate(1%, -1%) scale(1.02)' },
+          '66%': { transform: 'translate(-1%, 1%) scale(0.98)' },
+        },
+      },
+    },
+  },
+}
+</script>
+
+<style>
+/* ===== TRUE BLACK ===== */
+body {
+  background: #000000;
+  color: #f5f0e8;
+}
+
+/* ===== SPOTLIGHT CURSOR ===== */
+.spotlight-cursor {
+  position: fixed;
+  pointer-events: none;
+  z-index: 9998;
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle at center, rgba(212, 175, 55, 0.06) 0%, rgba(212, 175, 55, 0.02) 30%, transparent 60%);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  transition: opacity 0.3s ease;
+}
+
+/* ===== GOLD ACCENT ===== */
+.gold-text {
+  background: linear-gradient(135deg, #d4af37 0%, #f0d78c 30%, #d4af37 60%, #c5a028 100%);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: textShimmer 6s ease-in-out infinite;
+}
+
+.gold-border {
+  border-color: rgba(212, 175, 55, 0.3);
+  transition: border-color 0.6s ease;
+}
+.gold-border:hover {
+  border-color: rgba(212, 175, 55, 0.7);
+}
+
+/* ===== CINEMATIC IMAGE ENTRANCE ===== */
+.img-cinematic {
+  opacity: 0;
+  animation: velvet 1.2s cubic-bezier(0.16, 1, 0.3, 1) 0.4s forwards;
+}
+
+/* ===== LUXURY CARD ===== */
+.luxury-card {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.luxury-card:hover {
+  background: rgba(255, 255, 255, 0.03);
+  border-color: rgba(212, 175, 55, 0.25);
+  transform: translateY(-2px);
+}
+
+/* ===== GOLD BUTTON ===== */
+.btn-gold {
+  background: linear-gradient(135deg, #d4af37 0%, #c5a028 100%);
+  color: #000;
+  font-weight: 600;
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.btn-gold:hover {
+  box-shadow: 0 0 30px rgba(212, 175, 55, 0.3), 0 0 60px rgba(212, 175, 55, 0.1);
+  transform: scale(1.02);
+}
+
+.btn-ghost {
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #f5f0e8;
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.btn-ghost:hover {
+  border-color: rgba(255, 255, 255, 0.4);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+/* ===== SECTION DIVIDER ===== */
+.section-divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(212,175,55,0.2), transparent);
+  border: none;
+}
+
+/* ===== GOLD GLOW DOT ===== */
+.gold-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: #d4af37;
+  box-shadow: 0 0 8px rgba(212,175,55,0.6), 0 0 20px rgba(212,175,55,0.3);
+}
+
+/* Selection */
+::selection { background: rgba(212, 175, 55, 0.3); color: #fff; }
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 3px; }
+::-webkit-scrollbar-track { background: #000; }
+::-webkit-scrollbar-thumb { background: rgba(212,175,55,0.2); border-radius: 2px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(212,175,55,0.4); }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+</style>
+</head>
+<body class="font-body antialiased min-h-screen">
+
+<!-- Spotlight cursor effect -->
+<div class="spotlight-cursor hidden lg:block" id="spotlight" aria-hidden="true"></div>
+
+<!-- Ambient background glow -->
+<div class="fixed inset-0 pointer-events-none overflow-hidden" aria-hidden="true">
+  <div class="absolute top-0 right-0 w-[800px] h-[800px] rounded-full animate-spotlight"
+       style="background: radial-gradient(circle, rgba(212,175,55,0.04) 0%, transparent 70%); transform: translate(20%, -20%);"></div>
+  <div class="absolute bottom-0 left-0 w-[600px] h-[600px] rounded-full animate-spotlight"
+       style="background: radial-gradient(circle, rgba(212,175,55,0.03) 0%, transparent 70%); transform: translate(-20%, 20%); animation-delay: 4s;"></div>
+</div>
+
+<!-- ========== NAV ========== -->
+<nav class="relative z-50 border-b border-white/[0.04] bg-black/80 backdrop-blur-xl">
+  <div class="max-w-7xl mx-auto px-8 py-5 flex items-center justify-between">
+    <div class="font-display text-2xl tracking-[0.15em] font-medium gold-text">AUX</div>
+    <div class="hidden md:flex items-center gap-10 text-sm tracking-[0.08em] text-white/40 font-medium">
+      <a href="#collection" class="hover:text-white/80 transition-colors duration-500">Collection</a>
+      <a href="#craft" class="hover:text-white/80 transition-colors duration-500">Craft</a>
+      <a href="#pricing" class="hover:text-white/80 transition-colors duration-500">Acquire</a>
+      <a href="#" class="hover:text-white/80 transition-colors duration-500">Atelier</a>
+    </div>
+    <a href="#" class="text-xs tracking-[0.12em] text-white/50 hover:text-white/90 transition-colors duration-500">ENQUIRE</a>
+  </div>
+</nav>
+
+<!-- ========== HERO ========== -->
+<section class="relative z-10 min-h-screen flex items-center px-8">
+  <div class="max-w-7xl mx-auto grid lg:grid-cols-2 gap-16 lg:gap-24 items-center w-full">
+    <!-- Text column -->
+    <div class="animate-cinematic" style="opacity: 0;">
+      <div class="flex items-center gap-3 mb-8">
+        <div class="gold-dot animate-glow-breathe"></div>
+        <span class="text-xs tracking-[0.25em] text-gold-400/60 uppercase">Geneva · Est. 1887</span>
+      </div>
+
+      <h1 class="font-display text-5xl sm:text-6xl lg:text-7xl xl:text-8xl leading-[1.05] tracking-[-0.01em] mb-8">
+        <span class="block text-white font-light italic">Time</span>
+        <span class="block gold-text font-semibold">Perfected</span>
+      </h1>
+
+      <p class="text-white/30 text-lg leading-relaxed mb-12 max-w-md font-light tracking-[0.02em]">
+        Each AUX timepiece is hand-assembled over 340 hours by a single master watchmaker.
+        Only 47 pieces leave our Geneva atelier each year.
+      </p>
+
+      <div class="flex flex-col sm:flex-row gap-4">
+        <a href="#" class="btn-gold px-10 py-4 text-sm tracking-[0.1em] text-center">EXPLORE COLLECTION</a>
+        <a href="#" class="btn-ghost px-10 py-4 text-sm tracking-[0.1em] text-center">BOOK CONSULTATION</a>
+      </div>
+    </div>
+
+    <!-- Image column -->
+    <div class="img-cinematic">
+      <div class="relative">
+        <!-- Gold frame -->
+        <div class="absolute -inset-3 border border-white/[0.06] pointer-events-none" aria-hidden="true"></div>
+        <img src="https://images.unsplash.com/photo-1547996160-81dfa63595aa?w=800&q=80"
+             alt="Luxury mechanical watch with exposed movement on black background"
+             class="w-full h-auto relative z-10"
+             loading="eager" width="800" height="1000">
+        <!-- Subtle bottom glow -->
+        <div class="absolute -bottom-8 left-1/2 -translate-x-1/2 w-64 h-16 bg-gold-400/10 blur-2xl rounded-full pointer-events-none" aria-hidden="true"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scroll indicator -->
+  <div class="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-white/15">
+    <span class="text-[10px] tracking-[0.3em]">DISCOVER</span>
+    <div class="w-px h-8 bg-gradient-to-b from-white/20 to-transparent"></div>
+  </div>
+</section>
+
+<hr class="section-divider">
+
+<!-- ========== COLLECTION ========== -->
+<section id="collection" class="relative z-10 px-8 py-32">
+  <div class="max-w-7xl mx-auto">
+    <div class="text-center mb-20">
+      <p class="text-xs tracking-[0.3em] text-gold-400/40 mb-6">THE COLLECTION</p>
+      <h2 class="font-display text-4xl sm:text-5xl lg:text-6xl tracking-[-0.01em] gold-text font-medium">
+        Curated Excellence
+      </h2>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 lg:gap-12">
+      <!-- Watch 1 -->
+      <div class="group cursor-pointer">
+        <div class="relative mb-8 overflow-hidden">
+          <div class="absolute inset-0 bg-black/40 group-hover:bg-black/10 transition-colors duration-700 z-10 pointer-events-none"></div>
+          <img src="https://images.unsplash.com/photo-1524592094714-0f0654e20314?w=600&q=80"
+               alt="Classic dress watch with leather strap"
+               class="w-full h-80 object-cover transition-transform duration-1000 group-hover:scale-105"
+               loading="lazy" width="600" height="600">
+        </div>
+        <p class="text-[10px] tracking-[0.3em] text-gold-400/40 mb-2">COLLECTION 01</p>
+        <h3 class="font-display text-2xl mb-2 tracking-[-0.01em] text-white/90">L'Essentiel</h3>
+        <p class="text-white/25 text-sm font-light tracking-[0.03em]">Pure. Unadorned. The platonic ideal of a dress watch.</p>
+      </div>
+
+      <!-- Watch 2 -->
+      <div class="group cursor-pointer lg:mt-16">
+        <div class="relative mb-8 overflow-hidden">
+          <div class="absolute inset-0 bg-black/40 group-hover:bg-black/10 transition-colors duration-700 z-10 pointer-events-none"></div>
+          <img src="https://images.unsplash.com/photo-1539874754764-5a96559165b0?w=600&q=80"
+               alt="Chronograph with exposed mechanics"
+               class="w-full h-80 object-cover transition-transform duration-1000 group-hover:scale-105"
+               loading="lazy" width="600" height="600">
+        </div>
+        <p class="text-[10px] tracking-[0.3em] text-gold-400/40 mb-2">COLLECTION 02</p>
+        <h3 class="font-display text-2xl mb-2 tracking-[-0.01em] text-white/90">Chronographe</h3>
+        <p class="text-white/25 text-sm font-light tracking-[0.03em]">Precision in motion. The art of measuring time itself.</p>
+      </div>
+
+      <!-- Watch 3 -->
+      <div class="group cursor-pointer lg:mt-8">
+        <div class="relative mb-8 overflow-hidden">
+          <div class="absolute inset-0 bg-black/40 group-hover:bg-black/10 transition-colors duration-700 z-10 pointer-events-none"></div>
+          <img src="https://images.unsplash.com/photo-1619946794135-5bc917a27793?w=600&q=80"
+               alt="Skeleton watch with tourbillon"
+               class="w-full h-80 object-cover transition-transform duration-1000 group-hover:scale-105"
+               loading="lazy" width="600" height="600">
+        </div>
+        <p class="text-[10px] tracking-[0.3em] text-gold-400/40 mb-2">COLLECTION 03</p>
+        <h3 class="font-display text-2xl mb-2 tracking-[-0.01em] text-white/90">Tourbillon Céleste</h3>
+        <p class="text-white/25 text-sm font-light tracking-[0.03em]">A window into the movement. Poetry in brass and ruby.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="section-divider">
+
+<!-- ========== CRAFT SECTION ========== -->
+<section id="craft" class="relative z-10 px-8 py-32">
+  <div class="max-w-6xl mx-auto grid lg:grid-cols-2 gap-16 lg:gap-24 items-center">
+    <div class="order-2 lg:order-1">
+      <img src="https://images.unsplash.com/photo-1623998021446-45cd9b269356?w=800&q=80"
+           alt="Master watchmaker at work under magnification lamp"
+           class="w-full h-auto"
+           loading="lazy" width="800" height="1000">
+    </div>
+    <div class="order-1 lg:order-2">
+      <p class="text-xs tracking-[0.3em] text-gold-400/40 mb-6">THE ATELIER</p>
+      <h2 class="font-display text-3xl sm:text-4xl lg:text-5xl tracking-[-0.01em] mb-8 leading-[1.15]">
+        <span class="text-white/90 font-light">340 Hours.</span><br>
+        <span class="gold-text font-medium">One Watchmaker.</span>
+      </h2>
+      <div class="space-y-6 text-white/30 font-light leading-relaxed tracking-[0.02em]">
+        <p>There are no assembly lines at AUX. No quotas. No compromises. Each caliber is hand-finished with perlage, Côtes de Genève, and anglage — techniques that cannot be automated.</p>
+        <p>The result is not a product. It is a mechanical poem that will outlive its owner, and their children, and theirs.</p>
+      </div>
+      <div class="flex gap-12 mt-10 pt-10 border-t border-white/[0.04]">
+        <div>
+          <div class="font-display text-3xl gold-text mb-1">47</div>
+          <div class="text-[10px] tracking-[0.2em] text-white/20">PIECES / YEAR</div>
+        </div>
+        <div>
+          <div class="font-display text-3xl gold-text mb-1">340</div>
+          <div class="text-[10px] tracking-[0.2em] text-white/20">HOURS / PIECE</div>
+        </div>
+        <div>
+          <div class="font-display text-3xl gold-text mb-1">1887</div>
+          <div class="text-[10px] tracking-[0.2em] text-white/20">ESTABLISHED</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="section-divider">
+
+<!-- ========== PRICING ========== -->
+<section id="pricing" class="relative z-10 px-8 py-32">
+  <div class="max-w-5xl mx-auto">
+    <div class="text-center mb-20">
+      <p class="text-xs tracking-[0.3em] text-gold-400/40 mb-6">ACQUIRE</p>
+      <h2 class="font-display text-4xl sm:text-5xl lg:text-6xl tracking-[-0.01em] gold-text font-medium">
+        A Legacy, Not a Purchase
+      </h2>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+      <!-- Essential -->
+      <div class="luxury-card p-10 text-center">
+        <p class="text-[10px] tracking-[0.25em] text-gold-400/30 mb-6">L'ESSENTIEL</p>
+        <div class="font-display text-4xl gold-text mb-8">$14,500</div>
+        <ul class="space-y-4 mb-10 text-sm text-white/25 font-light tracking-[0.03em]">
+          <li>Hand-wound caliber AUX-01</li>
+          <li>Sapphire caseback</li>
+          <li>Alligator strap</li>
+          <li>5-year warranty</li>
+        </ul>
+        <a href="#" class="btn-ghost block px-6 py-3 text-xs tracking-[0.12em]">ENQUIRE</a>
+      </div>
+
+      <!-- Chronographe — featured -->
+      <div class="luxury-card p-10 text-center relative" style="border-color: rgba(212,175,55,0.2);">
+        <div class="absolute top-0 left-8 right-8 h-px bg-gradient-to-r from-transparent via-gold-400/30 to-transparent"></div>
+        <p class="text-[10px] tracking-[0.25em] text-gold-400/50 mb-6">CHRONOGRAPHE</p>
+        <div class="font-display text-4xl gold-text mb-8">$28,900</div>
+        <ul class="space-y-4 mb-10 text-sm text-white/25 font-light tracking-[0.03em]">
+          <li>Automatic caliber AUX-02</li>
+          <li>Column-wheel chronograph</li>
+          <li>Platinum rotor</li>
+          <li>Lifetime service</li>
+        </ul>
+        <a href="#" class="btn-gold block px-6 py-3 text-xs tracking-[0.12em]">ENQUIRE</a>
+        <div class="absolute bottom-0 left-8 right-8 h-px bg-gradient-to-r from-transparent via-gold-400/30 to-transparent"></div>
+      </div>
+
+      <!-- Tourbillon -->
+      <div class="luxury-card p-10 text-center">
+        <p class="text-[10px] tracking-[0.25em] text-gold-400/30 mb-6">TOURBILLON</p>
+        <div class="font-display text-4xl gold-text mb-8">$87,000</div>
+        <ul class="space-y-4 mb-10 text-sm text-white/25 font-light tracking-[0.03em]">
+          <li>Flying tourbillon AUX-03</li>
+          <li>Hand-engraved bridges</li>
+          <li>Bespoke case design</li>
+          <li>Concierge for life</li>
+        </ul>
+        <a href="#" class="btn-ghost block px-6 py-3 text-xs tracking-[0.12em]">ENQUIRE</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="section-divider">
+
+<!-- ========== CTA ========== -->
+<section class="relative z-10 px-8 py-32 text-center">
+  <div class="max-w-3xl mx-auto">
+    <p class="text-xs tracking-[0.3em] text-gold-400/40 mb-8">PRIVATE CONSULTATION</p>
+    <h2 class="font-display text-3xl sm:text-4xl lg:text-5xl tracking-[-0.01em] mb-6">
+      <span class="text-white/80 font-light">Commission Your</span><br>
+      <span class="gold-text font-medium">Heirloom</span>
+    </h2>
+    <p class="text-white/25 text-lg font-light tracking-[0.03em] mb-12 max-w-lg mx-auto leading-relaxed">
+      A personal consultation at our Geneva atelier, or via secure video link. No obligation. Pure discretion.
+    </p>
+    <div class="flex flex-col sm:flex-row gap-4 justify-center">
+      <a href="#" class="btn-gold px-12 py-5 text-sm tracking-[0.1em]">REQUEST CONSULTATION</a>
+      <a href="#" class="btn-ghost px-12 py-5 text-sm tracking-[0.1em]">DOWNLOAD DOSSIER</a>
+    </div>
+  </div>
+</section>
+
+<!-- ========== FOOTER ========== -->
+<footer class="relative z-10 border-t border-white/[0.04] px-8 py-10">
+  <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4 text-[10px] tracking-[0.15em] text-white/15">
+    <span>© 1887–2026 AUX GENÈVE</span>
+    <div class="flex gap-8">
+      <a href="#" class="hover:text-white/40 transition-colors duration-500">PRIVACY</a>
+      <a href="#" class="hover:text-white/40 transition-colors duration-500">TERMS</a>
+      <a href="#" class="hover:text-white/40 transition-colors duration-500">INSTAGRAM</a>
+    </div>
+  </div>
+</footer>
+
+<!-- Spotlight cursor script -->
+<script>
+// Move spotlight with cursor
+const spotlight = document.getElementById('spotlight');
+if (spotlight && window.matchMedia('(pointer: fine)').matches) {
+  document.addEventListener('mousemove', (e) => {
+    spotlight.style.left = e.clientX + 'px';
+    spotlight.style.top = e.clientY + 'px';
+  });
+}
+</script>
+
+</body>
+</html>

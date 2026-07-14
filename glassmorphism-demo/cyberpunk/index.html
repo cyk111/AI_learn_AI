@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NEON VAULT — Cybernetic Security Platform</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&family=Chakra+Petch:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = {
+  theme: {
+    extend: {
+      fontFamily: {
+        display: ['Orbitron', 'sans-serif'],
+        mono: ['JetBrains Mono', 'monospace'],
+        body: ['Chakra Petch', 'sans-serif'],
+      },
+      animation: {
+        'scanline': 'scanline 8s linear infinite',
+        'glitch-1': 'glitch1 3s infinite',
+        'glitch-2': 'glitch2 2.5s infinite 0.3s',
+        'flicker': 'flicker 0.15s infinite',
+        'flicker-slow': 'flicker 5s infinite',
+        'neon-pulse': 'neonPulse 2s ease-in-out infinite',
+        'neon-pulse-slow': 'neonPulse 3s ease-in-out infinite 0.5s',
+        'hud-rotate': 'hudRotate 20s linear infinite',
+        'float-glitch': 'floatGlitch 6s ease-in-out infinite',
+        'reveal-glitch': 'revealGlitch 0.6s steps(3) forwards',
+        'marquee': 'marquee 30s linear infinite',
+        'chromatic-shift': 'chromaticShift 4s ease-in-out infinite',
+      },
+      keyframes: {
+        scanline: {
+          '0%': { transform: 'translateY(-100%)' },
+          '100%': { transform: 'translateY(100vh)' },
+        },
+        glitch1: {
+          '0%, 100%': { transform: 'translate(0)' },
+          '20%': { transform: 'translate(-2px, 2px)' },
+          '40%': { transform: 'translate(2px, -1px)' },
+          '60%': { transform: 'translate(-1px, -2px)' },
+          '80%': { transform: 'translate(1px, 1px)' },
+        },
+        glitch2: {
+          '0%, 100%': { transform: 'translate(0)' },
+          '25%': { transform: 'translate(3px, -1px) skewX(1deg)' },
+          '50%': { transform: 'translate(-2px, 2px)' },
+          '75%': { transform: 'translate(-1px, -2px) skewX(-0.5deg)' },
+        },
+        flicker: {
+          '0%, 100%': { opacity: '1' },
+          '50%': { opacity: '0.8' },
+        },
+        neonPulse: {
+          '0%, 100%': { boxShadow: '0 0 5px currentColor, 0 0 10px currentColor, 0 0 20px currentColor' },
+          '50%': { boxShadow: '0 0 10px currentColor, 0 0 25px currentColor, 0 0 50px currentColor, 0 0 75px currentColor' },
+        },
+        hudRotate: {
+          '0%': { transform: 'rotate(0deg)' },
+          '100%': { transform: 'rotate(360deg)' },
+        },
+        floatGlitch: {
+          '0%, 100%': { transform: 'translateY(0px) translateX(0)' },
+          '25%': { transform: 'translateY(-10px) translateX(3px)' },
+          '50%': { transform: 'translateY(-5px) translateX(-2px)' },
+          '75%': { transform: 'translateY(-15px) translateX(-4px)' },
+        },
+        revealGlitch: {
+          '0%': { opacity: '0', transform: 'translateX(-10px)' },
+          '33%': { opacity: '0.3', transform: 'translateX(5px)' },
+          '66%': { opacity: '0.6', transform: 'translateX(-3px)' },
+          '100%': { opacity: '1', transform: 'translateX(0)' },
+        },
+        marquee: {
+          '0%': { transform: 'translateX(0)' },
+          '100%': { transform: 'translateX(-50%)' },
+        },
+        chromaticShift: {
+          '0%, 100%': { textShadow: '2px 0 cyan, -2px 0 magenta' },
+          '25%': { textShadow: '-2px 0 cyan, 2px 0 magenta' },
+          '50%': { textShadow: '0 2px cyan, 0 -2px magenta' },
+          '75%': { textShadow: '3px 1px cyan, -3px -1px magenta' },
+        },
+      },
+    },
+  },
+}
+</script>
+
+<style>
+/* ===== CRT SCANLINE OVERLAY ===== */
+.crt-overlay::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9998;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0, 0, 0, 0.03) 2px,
+    rgba(0, 0, 0, 0.03) 4px
+  );
+}
+
+/* Moving scanline bar */
+.scanline-bar {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9999;
+  background: linear-gradient(
+    to bottom,
+    transparent 0%,
+    rgba(0, 255, 255, 0.02) 50%,
+    transparent 100%
+  );
+  height: 8px;
+  animation: scanline 8s linear infinite;
+}
+
+/* ===== NEON GLOW UTILITIES ===== */
+.neon-cyan {
+  color: #00ffff;
+  text-shadow: 0 0 7px #00ffff, 0 0 20px #00ffff, 0 0 40px #00ffff;
+}
+.neon-magenta {
+  color: #ff00ff;
+  text-shadow: 0 0 7px #ff00ff, 0 0 20px #ff00ff, 0 0 40px #ff00ff;
+}
+.neon-yellow {
+  color: #ffff00;
+  text-shadow: 0 0 7px #ffff00, 0 0 15px #ffff00;
+}
+.neon-border-cyan {
+  border-color: #00ffff;
+  box-shadow: 0 0 5px #00ffff, 0 0 15px rgba(0,255,255,0.3), inset 0 0 5px rgba(0,255,255,0.1);
+}
+.neon-border-magenta {
+  border-color: #ff00ff;
+  box-shadow: 0 0 5px #ff00ff, 0 0 15px rgba(255,0,255,0.3), inset 0 0 5px rgba(255,0,255,0.1);
+}
+
+/* ===== GLITCH TEXT ===== */
+.glitch-text {
+  position: relative;
+}
+.glitch-text::before,
+.glitch-text::after {
+  content: attr(data-text);
+  position: absolute;
+  inset: 0;
+}
+.glitch-text::before {
+  color: #00ffff;
+  animation: glitch1 3s infinite;
+  clip-path: polygon(0 0, 100% 0, 100% 35%, 0 35%);
+}
+.glitch-text::after {
+  color: #ff00ff;
+  animation: glitch2 2.5s infinite 0.3s;
+  clip-path: polygon(0 65%, 100% 65%, 100% 100%, 0 100%);
+}
+
+/* ===== HUD ELEMENTS ===== */
+.hud-corner {
+  position: absolute;
+  width: 20px; height: 20px;
+  border-color: #00ffff;
+  border-style: solid;
+}
+.hud-corner-tl { top: -1px; left: -1px; border-width: 2px 0 0 2px; }
+.hud-corner-tr { top: -1px; right: -1px; border-width: 2px 2px 0 0; }
+.hud-corner-bl { bottom: -1px; left: -1px; border-width: 0 0 2px 2px; }
+.hud-corner-br { bottom: -1px; right: -1px; border-width: 0 2px 2px 0; }
+
+/* ===== CARD BASE ===== */
+.cyber-card {
+  background: rgba(0, 10, 20, 0.85);
+  border: 1px solid rgba(0, 255, 255, 0.2);
+  backdrop-filter: blur(4px);
+  position: relative;
+  transition: all 0.3s ease;
+}
+.cyber-card:hover {
+  border-color: rgba(0, 255, 255, 0.6);
+  box-shadow: 0 0 15px rgba(0,255,255,0.15), 0 0 30px rgba(0,255,255,0.05), inset 0 0 15px rgba(0,255,255,0.03);
+  transform: translateY(-2px);
+}
+
+/* ===== CHROMATIC ABERRATION HEADLINE ===== */
+.chromatic {
+  animation: chromaticShift 4s ease-in-out infinite;
+}
+
+/* ===== GRID BACKGROUND ===== */
+.cyber-grid {
+  background-image:
+    linear-gradient(rgba(0, 255, 255, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 255, 255, 0.05) 1px, transparent 1px);
+  background-size: 40px 40px;
+  background-position: center center;
+}
+
+/* ===== GLOW BUTTON ===== */
+.btn-cyan {
+  background: rgba(0, 255, 255, 0.1);
+  border: 1px solid #00ffff;
+  color: #00ffff;
+  text-shadow: 0 0 5px #00ffff;
+  transition: all 0.3s ease;
+}
+.btn-cyan:hover {
+  background: rgba(0, 255, 255, 0.2);
+  box-shadow: 0 0 15px #00ffff, 0 0 30px rgba(0,255,255,0.4), inset 0 0 15px rgba(0,255,255,0.1);
+  transform: scale(1.02);
+}
+
+.btn-magenta {
+  background: #ff00ff;
+  border: 1px solid #ff00ff;
+  color: #000;
+  font-weight: 700;
+  box-shadow: 0 0 10px #ff00ff, 0 0 30px rgba(255,0,255,0.4);
+  transition: all 0.3s ease;
+}
+.btn-magenta:hover {
+  box-shadow: 0 0 20px #ff00ff, 0 0 50px rgba(255,0,255,0.6), 0 0 80px rgba(255,0,255,0.3);
+  transform: scale(1.03);
+}
+
+/* ===== MARQUEE ===== */
+.marquee-track {
+  display: flex;
+  width: max-content;
+  animation: marquee 30s linear infinite;
+}
+
+/* ===== DECORATIVE HUD CIRCLE ===== */
+.hud-circle {
+  border: 1px solid rgba(0, 255, 255, 0.2);
+  border-radius: 50%;
+  position: absolute;
+  pointer-events: none;
+}
+.hud-circle::after {
+  content: '';
+  position: absolute;
+  top: 50%; left: 50%;
+  width: 4px; height: 4px;
+  background: #00ffff;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  box-shadow: 0 0 6px #00ffff;
+}
+
+/* Selection */
+::selection { background: #ff00ff; color: #000; }
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: #000; }
+::-webkit-scrollbar-thumb { background: #00ffff; box-shadow: 0 0 5px #00ffff; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+</style>
+</head>
+<body class="font-body bg-[#000408] text-[#b3ffe0] antialiased crt-overlay min-h-screen overflow-x-hidden cyber-grid">
+
+<!-- Scanline bar -->
+<div class="scanline-bar" aria-hidden="true"></div>
+
+<!-- ========== NAVIGATION ========== -->
+<nav class="relative z-50 border-b border-cyan/20 bg-[#000408]/90 backdrop-blur-sm">
+  <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+    <div class="flex items-center gap-3">
+      <div class="font-display font-black text-xl tracking-[0.2em] neon-cyan animate-flicker-slow">
+        ◈ NEON VAULT
+      </div>
+    </div>
+    <div class="hidden md:flex items-center gap-8 text-xs tracking-[0.15em] font-mono text-cyan-400/60">
+      <a href="#features" class="hover:text-cyan-300 transition-colors">[ FEATURES ]</a>
+      <a href="#pricing" class="hover:text-cyan-300 transition-colors">[ PRICING ]</a>
+      <a href="#" class="hover:text-cyan-300 transition-colors">[ DOCS ]</a>
+      <a href="#" class="hover:text-cyan-300 transition-colors">[ NETWORK ]</a>
+    </div>
+    <div>
+      <a href="#" class="text-xs font-mono tracking-[0.15em] px-5 py-2.5 border border-cyan/30 text-cyan-400 hover:border-cyan hover:text-cyan-300 transition-all duration-300">
+        ACCESS TERMINAL
+      </a>
+    </div>
+  </div>
+</nav>
+
+<!-- ========== HERO ========== -->
+<section class="relative z-10 min-h-[90vh] flex items-center justify-center px-6 pt-24 pb-16 overflow-hidden">
+  <!-- HUD Circles -->
+  <div class="hud-circle w-[300px] h-[300px] top-20 -left-20 opacity-30 animate-hud-rotate" aria-hidden="true"></div>
+  <div class="hud-circle w-[200px] h-[200px] bottom-32 right-10 opacity-20 animate-hud-rotate" style="animation-direction: reverse; animation-duration: 25s;" aria-hidden="true"></div>
+
+  <!-- Grid fade at edges -->
+  <div class="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-[#000408] pointer-events-none" aria-hidden="true"></div>
+
+  <div class="max-w-4xl mx-auto text-center relative">
+    <!-- Status badge -->
+    <div class="inline-flex items-center gap-3 mb-10 px-4 py-2 border border-cyan/20 bg-black/60 font-mono text-xs tracking-[0.2em] text-cyan-400/80">
+      <span class="w-2 h-2 rounded-full bg-cyan-400 animate-neon-pulse"></span>
+      <span>SYS.ONLINE</span>
+      <span class="text-cyan-400/30">//</span>
+      <span>NODES: 2,847 ACTIVE</span>
+    </div>
+
+    <!-- Headline with glitch effect -->
+    <h1 class="font-display font-black text-5xl sm:text-6xl lg:text-7xl tracking-[0.05em] mb-6 relative">
+      <span class="block chromatic mb-2" data-text="CYBERNETIC">CYBERNETIC</span>
+      <span class="block text-white neon-cyan" data-text="SECURITY">SECURITY</span>
+      <span class="block text-cyan-300 text-4xl sm:text-5xl lg:text-6xl mt-2 tracking-[0.3em] font-light" data-text="PROTOCOL">PROTOCOL</span>
+    </h1>
+
+    <!-- Subheadline -->
+    <p class="font-mono text-sm sm:text-base text-cyan-400/60 max-w-xl mx-auto mb-12 tracking-[0.05em] leading-relaxed">
+      <span class="text-cyan-400">></span> Zero-trust neural firewall with quantum-resistant encryption.
+      Protect your digital assets from the <span class="text-magenta-400">next generation</span> of threats.
+    </p>
+
+    <!-- CTA -->
+    <div class="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16">
+      <a href="#" class="btn-magenta px-10 py-4 font-display text-sm tracking-[0.15em]">
+        INITIALIZE DEFENSE
+      </a>
+      <a href="#" class="btn-cyan px-10 py-4 font-display text-sm tracking-[0.15em]">
+        VIEW SPECS
+      </a>
+    </div>
+
+    <!-- Dashboard image -->
+    <div class="cyber-card p-1.5 max-w-4xl mx-auto">
+      <div class="relative">
+        <div class="hud-corner hud-corner-tl"></div>
+        <div class="hud-corner hud-corner-tr"></div>
+        <div class="hud-corner hud-corner-bl"></div>
+        <div class="hud-corner hud-corner-br"></div>
+        <img src="https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=1200&q=80"
+             alt="Cybersecurity operations center with holographic displays"
+             class="w-full h-auto"
+             loading="eager" width="1200" height="675">
+      </div>
+    </div>
+
+    <!-- Stats ticker -->
+    <div class="flex flex-wrap items-center justify-center gap-8 mt-10 font-mono text-xs tracking-[0.1em]">
+      <div><span class="text-cyan-400/40">THREATS BLOCKED</span> <span class="text-cyan-400 ml-2 neon-cyan">1.2B+</span></div>
+      <div class="text-cyan-400/20">|</div>
+      <div><span class="text-cyan-400/40">UPTIME</span> <span class="text-cyan-400 ml-2">99.997%</span></div>
+      <div class="text-cyan-400/20">|</div>
+      <div><span class="text-cyan-400/40">RESPONSE</span> <span class="text-cyan-400 ml-2">&lt;0.3ms</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== MARQUEE TICKER ========== -->
+<div class="relative z-10 border-y border-cyan/10 bg-black/40 py-3 overflow-hidden font-mono text-xs tracking-[0.15em] text-cyan-400/50">
+  <div class="marquee-track">
+    <span class="mx-8">◆ NODE_01: OPERATIONAL</span>
+    <span class="mx-8">◆ NODE_02: OPERATIONAL</span>
+    <span class="mx-8 text-magenta-400">◆ THREAT DETECTED — NEUTRALIZED</span>
+    <span class="mx-8">◆ NODE_03: OPERATIONAL</span>
+    <span class="mx-8">◆ ENCRYPTION: AES-512 ACTIVE</span>
+    <span class="mx-8">◆ NODE_04: OPERATIONAL</span>
+    <span class="mx-8 text-magenta-400">◆ INTRUSION ATTEMPT — BLOCKED</span>
+    <span class="mx-8">◆ NODE_01: OPERATIONAL</span>
+    <span class="mx-8">◆ NODE_02: OPERATIONAL</span>
+    <span class="mx-8 text-magenta-400">◆ THREAT DETECTED — NEUTRALIZED</span>
+    <span class="mx-8">◆ NODE_03: OPERATIONAL</span>
+    <span class="mx-8">◆ ENCRYPTION: AES-512 ACTIVE</span>
+  </div>
+</div>
+
+<!-- ========== FEATURES ========== -->
+<section id="features" class="relative z-10 px-6 py-24">
+  <div class="max-w-7xl mx-auto">
+    <div class="text-center mb-16">
+      <p class="font-mono text-xs tracking-[0.3em] text-cyan-400 mb-4">// CORE_SYSTEMS</p>
+      <h2 class="font-display font-black text-3xl sm:text-4xl tracking-[0.05em] neon-cyan">
+        DEFENSE MATRIX
+      </h2>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <!-- 1 -->
+      <div class="cyber-card p-8">
+        <div class="hud-corner hud-corner-tl" style="width:12px;height:12px"></div>
+        <div class="font-mono text-xs text-cyan-400/50 mb-4 tracking-[0.2em]">SYS_01</div>
+        <h3 class="font-display font-bold text-lg mb-3 tracking-[0.05em] text-cyan-300">Neural Firewall</h3>
+        <p class="font-mono text-xs text-cyan-400/50 leading-relaxed">Self-learning AI predicts and blocks zero-day exploits before they execute. Pattern recognition across 2,847 threat vectors.</p>
+      </div>
+      <!-- 2 -->
+      <div class="cyber-card p-8 lg:mt-8">
+        <div class="hud-corner hud-corner-tr" style="width:12px;height:12px"></div>
+        <div class="font-mono text-xs text-cyan-400/50 mb-4 tracking-[0.2em]">SYS_02</div>
+        <h3 class="font-display font-bold text-lg mb-3 tracking-[0.05em] text-cyan-300">Quantum Encryption</h3>
+        <p class="font-mono text-xs text-cyan-400/50 leading-relaxed">Post-quantum lattice cryptography. Your data survives the quantum computing revolution — and everything after.</p>
+      </div>
+      <!-- 3 -->
+      <div class="cyber-card p-8 lg:mt-4">
+        <div class="font-mono text-xs text-cyan-400/50 mb-4 tracking-[0.2em]">SYS_03</div>
+        <h3 class="font-display font-bold text-lg mb-3 tracking-[0.05em] text-cyan-300">Darknet Monitor</h3>
+        <p class="font-mono text-xs text-cyan-400/50 leading-relaxed">Continuous dark web surveillance. Know when your credentials, data, or infrastructure appear where they shouldn't.</p>
+      </div>
+      <!-- 4 -->
+      <div class="cyber-card p-8">
+        <div class="font-mono text-xs text-cyan-400/50 mb-4 tracking-[0.2em]">SYS_04</div>
+        <h3 class="font-display font-bold text-lg mb-3 tracking-[0.05em] text-cyan-300">Zero-Trust Mesh</h3>
+        <p class="font-mono text-xs text-cyan-400/50 leading-relaxed">Every connection verified. Every packet authenticated. No implicit trust — not even from internal IPs.</p>
+      </div>
+      <!-- 5 -->
+      <div class="cyber-card p-8 lg:mt-8">
+        <div class="font-mono text-xs text-cyan-400/50 mb-4 tracking-[0.2em]">SYS_05</div>
+        <h3 class="font-display font-bold text-lg mb-3 tracking-[0.05em] text-cyan-300">Biometric Auth</h3>
+        <p class="font-mono text-xs text-cyan-400/50 leading-relaxed">Retina, voice, gait, and typing rhythm. Multi-modal biometric fusion creates an unforgeable identity chain.</p>
+      </div>
+      <!-- 6 -->
+      <div class="cyber-card p-8 lg:mt-12">
+        <div class="font-mono text-xs text-cyan-400/50 mb-4 tracking-[0.2em]">SYS_06</div>
+        <h3 class="font-display font-bold text-lg mb-3 tracking-[0.05em] text-cyan-300">Decoy Networks</h3>
+        <p class="font-mono text-xs text-cyan-400/50 leading-relaxed">AI-generated honeypots that think they're real. Attackers waste resources on phantom infrastructure while you stay invisible.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== THREAT MAP VISUAL ========== -->
+<section class="relative z-10 px-6 py-24 border-t border-cyan/10">
+  <div class="max-w-6xl mx-auto">
+    <div class="cyber-card p-8 text-center relative overflow-hidden">
+      <div class="hud-corner hud-corner-tl"></div><div class="hud-corner hud-corner-tr"></div>
+      <div class="hud-corner hud-corner-bl"></div><div class="hud-corner hud-corner-br"></div>
+      <p class="font-mono text-xs tracking-[0.3em] text-cyan-400/50 mb-6">// GLOBAL_THREAT_MAP</p>
+      <img src="https://images.unsplash.com/photo-1639762681485-074b7f938ba0?w=1200&q=80"
+           alt="World map with cyber attack visualization"
+           class="w-full h-auto opacity-80"
+           loading="lazy" width="1200" height="600">
+      <div class="flex justify-center gap-8 mt-6 font-mono text-xs tracking-[0.1em]">
+        <span class="text-red-400">● CRITICAL: 3</span>
+        <span class="text-yellow-400">● WARNING: 17</span>
+        <span class="text-cyan-400">● MONITORED: 142</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== PRICING ========== -->
+<section id="pricing" class="relative z-10 px-6 py-24">
+  <div class="max-w-5xl mx-auto">
+    <div class="text-center mb-16">
+      <p class="font-mono text-xs tracking-[0.3em] text-magenta-400 mb-4">// ACCESS_TIERS</p>
+      <h2 class="font-display font-black text-3xl sm:text-4xl tracking-[0.05em] neon-magenta">
+        DEPLOY PROTOCOL
+      </h2>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div class="cyber-card p-8">
+        <p class="font-mono text-xs tracking-[0.2em] text-cyan-400/50 mb-4">TIER_01</p>
+        <div class="font-display font-black text-4xl tracking-[0.05em] text-cyan-300 mb-6">$499<span class="text-sm text-cyan-400/40">/mo</span></div>
+        <ul class="space-y-3 mb-8 font-mono text-xs text-cyan-400/50">
+          <li class="flex items-center gap-2"><span class="text-cyan-400">▸</span> 5 Endpoints</li>
+          <li class="flex items-center gap-2"><span class="text-cyan-400">▸</span> Neural Firewall</li>
+          <li class="flex items-center gap-2"><span class="text-cyan-400">▸</span> Standard Encryption</li>
+          <li class="flex items-center gap-2"><span class="text-cyan-400">▸</span> 8/5 Support</li>
+        </ul>
+        <a href="#" class="block text-center py-3 btn-cyan font-mono text-xs tracking-[0.15em]">DEPLOY v1.0</a>
+      </div>
+
+      <div class="cyber-card p-8 relative neon-border-magenta" style="border-color: #ff00ff; box-shadow: 0 0 5px #ff00ff, 0 0 15px rgba(255,0,255,0.3), inset 0 0 5px rgba(255,0,255,0.1);">
+        <div class="absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1 bg-magenta-500 text-black font-display text-[10px] tracking-[0.2em] font-bold">ELITE</div>
+        <p class="font-mono text-xs tracking-[0.2em] text-magenta-400/70 mb-4">TIER_02</p>
+        <div class="font-display font-black text-4xl tracking-[0.05em] text-magenta-300 mb-6">$1,499<span class="text-sm text-magenta-400/40">/mo</span></div>
+        <ul class="space-y-3 mb-8 font-mono text-xs text-magenta-400/50">
+          <li class="flex items-center gap-2"><span class="text-magenta-400">▸</span> Unlimited Endpoints</li>
+          <li class="flex items-center gap-2"><span class="text-magenta-400">▸</span> Quantum Encryption</li>
+          <li class="flex items-center gap-2"><span class="text-magenta-400">▸</span> Darknet Monitor</li>
+          <li class="flex items-center gap-2"><span class="text-magenta-400">▸</span> Biometric Auth</li>
+          <li class="flex items-center gap-2"><span class="text-magenta-400">▸</span> 24/7 SOC Team</li>
+        </ul>
+        <a href="#" class="block text-center py-3 btn-magenta font-mono text-xs tracking-[0.15em]">DEPLOY v2.0</a>
+      </div>
+
+      <div class="cyber-card p-8">
+        <p class="font-mono text-xs tracking-[0.2em] text-cyan-400/50 mb-4">TIER_03</p>
+        <div class="font-display font-black text-4xl tracking-[0.05em] text-cyan-300 mb-6">CUSTOM</div>
+        <ul class="space-y-3 mb-8 font-mono text-xs text-cyan-400/50">
+          <li class="flex items-center gap-2"><span class="text-cyan-400">▸</span> Everything in Elite</li>
+          <li class="flex items-center gap-2"><span class="text-cyan-400">▸</span> On-Premise Air-Gapped</li>
+          <li class="flex items-center gap-2"><span class="text-cyan-400">▸</span> Custom Neural Models</li>
+          <li class="flex items-center gap-2"><span class="text-cyan-400">▸</span> Dedicated Response Unit</li>
+        </ul>
+        <a href="#" class="block text-center py-3 btn-cyan font-mono text-xs tracking-[0.15em]">REQUEST BRIEFING</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== CTA ========== -->
+<section class="relative z-10 px-6 py-24">
+  <div class="max-w-4xl mx-auto text-center">
+    <div class="cyber-card p-12 sm:p-16 relative overflow-hidden">
+      <div class="absolute top-0 right-0 w-40 h-40 bg-cyan-400/5 blur-3xl rounded-full" aria-hidden="true"></div>
+      <div class="absolute bottom-0 left-0 w-40 h-40 bg-magenta-400/5 blur-3xl rounded-full" aria-hidden="true"></div>
+
+      <h2 class="font-display font-black text-2xl sm:text-3xl tracking-[0.05em] neon-cyan mb-6 relative z-10">
+        READY TO JACK IN?
+      </h2>
+      <p class="font-mono text-sm text-cyan-400/50 mb-10 max-w-lg mx-auto relative z-10">
+        The grid is under attack. Every second you wait is another vector exposed.
+      </p>
+
+      <form class="flex flex-col sm:flex-row gap-3 max-w-md mx-auto relative z-10" onsubmit="event.preventDefault()">
+        <input type="email" placeholder="YOUR_IDENT@DOMAIN.NET"
+               class="flex-1 px-5 py-4 bg-black/60 border border-cyan/30 font-mono text-xs text-cyan-300 placeholder-cyan-400/20 focus:outline-none focus:border-cyan-400 transition-all duration-300">
+        <button type="submit" class="btn-magenta px-8 py-4 font-mono text-xs tracking-[0.15em] whitespace-nowrap">
+          INITIALIZE
+        </button>
+      </form>
+    </div>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer class="relative z-10 border-t border-cyan/10 px-6 py-8">
+  <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4 font-mono text-[10px] tracking-[0.15em] text-cyan-400/30">
+    <span>© 2087 NEON VAULT CORP. ALL RIGHTS RESERVED.</span>
+    <div class="flex gap-6">
+      <a href="#" class="hover:text-cyan-400/60">[PRIVACY]</a>
+      <a href="#" class="hover:text-cyan-400/60">[TERMS]</a>
+      <a href="#" class="hover:text-cyan-400/60">[GRID_STATUS]</a>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
