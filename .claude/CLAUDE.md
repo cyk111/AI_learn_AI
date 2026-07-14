@@ -1,3 +1,91 @@
+# CLAUDE.md
+
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+
+## Project Overview
+
+AI 学习资源聚合仓库 — 核心功能：
+1. **Prompt 采集器** (`scraper/`) — 从 GitHub 高星仓库抓取、分类、保存高质量 AI Prompt
+2. **Prompt 库** (`prompts/`) — 4404 个已分类的 Prompt 文件（17 个类别）
+3. **学习指南** (`guides/`) — PPT 生成、简历生成等设计系统文档
+4. **Skills 库** (`docs/`) — Claude Code Skills 的评测与安装记录
+
+## 常用命令
+
+```bash
+# 运行 Prompt 抓取器
+./run_scraper.sh                          # 抓取所有来源
+./run_scraper.sh --source github          # 仅抓取 GitHub 来源
+./run_scraper.sh --dry-run                # 仅抓取+分类，不保存文件
+./run_scraper.sh --limit 5                # 限制抓取前 5 个仓库
+./run_scraper.sh --output /path/to/dir    # 自定义输出目录
+
+# 直接运行 Python 模块
+python -m scraper.main                    # 等同于 ./run_scraper.sh
+
+# 安装依赖
+pip install -r requirements.txt
+```
+
+## 代码架构
+
+### `scraper/` — Prompt 采集引擎
+
+```
+scraper/
+├── main.py              # 入口：4 阶段流水线 (抓取→验证→分类→保存)
+├── config.py            # 目标仓库配置、分类关键词、质量阈值
+├── github_scraper.py    # GitHub API 抓取 + 多格式解析器
+├── categorizer.py       # 关键词匹配自动分类
+├── design_scraper.py    # 专门抓取 UI/设计类 Prompt（GPTs 泄露源）
+└── __init__.py
+```
+
+**数据流**：`main.py` → `github_scraper.scrape_github()` → `categorizer.categorize_all()` → 写入 `prompts/` 分类目录
+
+**抓取策略** (github_scraper.py 多格式支持):
+1. `prompts.csv` (CSV 列: act, prompt) — awesome-chatgpt-prompts 格式
+2. `PROMPTS.md` (`<details><summary>` 格式)
+3. README 中的 "## Act as X" 模式
+4. 独立 prompt 文件 (linexjlin/GPTs 风格)
+5. 中文 prompt 集合 (PlexPt 格式)
+6. 系统 prompt 集合 (LouisShark 格式)
+
+**分类系统** (config.py): 17 个类别，基于关键词匹配。`act` 字段命中权重 3，`prompt` 字段权重 1。
+
+**速率限制**: 无 token 时 60 req/h，设置 `GITHUB_TOKEN` 环境变量提升至 5000 req/h。
+
+### `prompts/` — Prompt 分类库
+
+- 4404 个 `.md` 文件，按类别分布在 17 个子目录中
+- 每个类别目录包含 `_stats.json`、`_index.md`
+- 顶层 `_all_prompts.json` 包含所有 prompt 的完整 JSON
+- `prompts/design/` 是 `design_scraper.py` 的专用输出（UI/设计细分 5 类）
+
+### `guides/` — 设计系统指南
+
+中文 Markdown 指南文档，包含 PPT 生成和简历生成的完整方法论。
+
+### `.claude/skills/` — 已安装的 Claude Code Skills
+
+7 个 Skills：frontend-design-pro、css-hover-effects、ui-refactor、awesome-design-html、karpathy-guidelines、planning-with-files、checklist-performance
+
+### `glassmorphism-demo/` — 前端设计 Demo
+
+3 个设计风格演示：glassmorphism、dark-oled、cyberpunk
+
+### `docs/superpowers/specs/` — 设计文档存档
+
+项目相关的设计规格文档。
+
+## Git 规范
+
+- 分支：`main` 为默认分支
+- Commit 消息末尾包含 `Co-Authored-By: Claude <noreply@anthropic.com>`
+- 工作目录从项目根开始 (`/Users/cyk-station/AI_learn_AI`)
+
+---
+
 # PPT Generation Rules — 爆款 PPT 设计系统
 
 ## Role
